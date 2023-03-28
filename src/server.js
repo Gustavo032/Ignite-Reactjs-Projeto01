@@ -1,22 +1,9 @@
 import http from "node:http"
 
-// - Criar um usuário
-// - Remover um usuário
-// - Listagem de usuários 
-// - Edição de usuários
+// stateful = Informação em memória para funcionar(tipo temporária)
+// stateless = Informação em banco de dados para funcionar
 
-// - HTTP
-//	 	- Método HTTP
-// 		- URL 
-
-
-// GET, POST, PUT, PATCH, DELETE
-
-// GET => Buscar uma informação no backend
-// Post => Criar uma informação no backend
-// Put => Editar um recurso no backend (atualizar varios ao mesmo tempo(geral))
-// Patch => Atualizar um recurso no backend (atualizar uma informação especifica(tipo um toggle de aceito os termos)
-// DELETE => Deletar um recurso no backend
+const users = []
 
 const server = http.createServer((req, res)=>{
 
@@ -24,10 +11,18 @@ const server = http.createServer((req, res)=>{
 	console.log(method, url)
 	
 	if(method === "GET" && url === "/users"){
-		return res.end("Listagem de usuários")
+		
+		return res
+			.setHeader("Content-Type", "application/json")
+			.end(JSON.stringify(users))
 	}
 	
 	if(method === "POST" && url === "/users"){
+		users.push({ 
+			id: 1, 
+			name: "John", 
+			email: "john@example.com"
+		})
 		return res.end("Criação de usuário")
 	}
 
