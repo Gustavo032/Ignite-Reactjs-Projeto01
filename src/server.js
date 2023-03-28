@@ -23,10 +23,10 @@ const server = http.createServer((req, res)=>{
 			name: "John", 
 			email: "john@example.com"
 		})
-		return res.end("Criação de usuário")
+		return res.writeHead(201).end()
 	}
 
-	return res.end("hello ignite")
+	return res.writeHead(404).end()
 })
 
 server.listen(3333)
