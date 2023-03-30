@@ -2,7 +2,7 @@
 
 // process.stdin.pipe(process.stdout)
 
-import { Readable } from "node:stream" 
+import { Readable, Transform, Writable } from "node:stream" 
 
 class OneToHundredString extends Readable {
 	index = 0
@@ -11,16 +11,33 @@ class OneToHundredString extends Readable {
 		const i = this.index++
 		
 		setTimeout(()=>{
-			if( i >= 10000){
+			if( i >= 1000000){
 				this.push(null)
 			}else{
 				const buf = Buffer.from(String(i))
 				this.push(buf)
 			}
-		}, 10)
+		}, 0)
 		
 	}
 }
 
+class InverseNumberStream extends Transform {
+	_transform(chunk, stream, callback) {
+		const transformed = Number(chunk.toString()) * -1
+		
+		callback(null, Buffer.from(String(transformed)))
+	}
+}
+
+class MultiplyByTenStream extends Writable {
+	_write(chunk, enconding, callback) {
+		console.log(Number(chunk.toString()) * 10)
+
+		callback()
+	}
+}
+
 new OneToHundredString()
-	.pipe(process.stdout)
+	.pipe(new InverseNumberStream())
+	.pipe(new MultiplyByTenStream())
