@@ -22,22 +22,23 @@ class OneToHundredString extends Readable {
 	}
 }
 
-class InverseNumberStream extends Transform {
-	_transform(chunk, stream, callback) {
-		const transformed = Number(chunk.toString()) * -1
-		
-		callback(null, Buffer.from(String(transformed)))
+class InverseNumberStream extends Transform{
+	_transform(chunk, encoding, callback){
+		const transformed = Number(chunk.toString())*-1
+
+		callback(null,Buffer.from(String(transformed)))
 	}
 }
+class MultiplyByTenStream extends Writable{
+	_write(chunk, encoding, callback=()=>{console.log('teste')}) {
 
-class MultiplyByTenStream extends Writable {
-	_write(chunk, enconding, callback) {
-		console.log(Number(chunk.toString()) * 10)
+		console.log(Number(chunk.toString())*100000000000)		
+
 
 		callback()
 	}
 }
 
 new OneToHundredString()
-	.pipe(new InverseNumberStream())
+	.pipe(new InverseNumberStream)
 	.pipe(new MultiplyByTenStream())
