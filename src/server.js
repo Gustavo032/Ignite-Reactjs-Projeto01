@@ -1,4 +1,5 @@
 import http from "node:http"
+import { json } from "./middlewares/json"
 
 // stateful = Informação em memória para funcionar(tipo temporária)
 // stateless = Informação em banco de dados para funcionar
@@ -7,29 +8,20 @@ const users = []
 
 const server = http.createServer(async(req, res)=>{
 
-	const { method, url } = req
-	console.log(method, url)
-
-	const buffers = []
-
-	for await (const chunk of req){
-		buffers.push(chunk)
-	}
-	try {	
-		req.body = JSON.parse(Buffer.concat(buffers).toString())
-	} catch {
-		req.body = null
-	}
+	const { method, url } = req // exportando o método e caminho da request
 	
-	console.log(req.body)
+	console.log(method, url) // imprimindo método e caminho da request
+
+	await json(req,res) // middleware que define body da request
 	
-	if(method === "GET" && url === "/users"){
+	console.log(req.body) // Imprimindo o body da request
+	
+	if(method === "GET" && url === "/users"){ // GET na rota "users"
 		return res
-		.setHeader("Content-Type", "application/json")
 		.end(JSON.stringify(users))
 	}
 	
-	if(method === "POST" && url === "/users"){
+	if(method === "POST" && url === "/users"){ // POST na rota "users"
 		const { name, email } = req.body
 		users.push({ 
 			id: 1, 
