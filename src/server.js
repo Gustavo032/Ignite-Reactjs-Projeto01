@@ -1,6 +1,7 @@
 import http from "node:http"
 import { Database } from "./database.js"
 import { json } from "./middlewares/json.js"
+import { randomUUID } from "node:crypto"
 
 // stateful = Informação em memória para funcionar(tipo temporária)
 // stateless = Informação em banco de dados para funcionar
@@ -29,7 +30,7 @@ const server = http.createServer(async(req, res)=>{
 		const { name, email } = req.body
 		
 		const user = { 
-			id: 1, 
+			id: randomUUID(), 
 			name, 
 			email,
 		}
