@@ -1,14 +1,15 @@
 import http from "node:http"
-import { Database } from "./database.js"
 import { json } from "./middlewares/json.js"
-import { randomUUID } from "node:crypto"
+import { routes } from "./routes.js"
 
 // stateful = Informação em memória para funcionar(tipo temporária)
 // stateless = Informação em banco de dados para funcionar
 
-const database = new Database()
+// ENVIAR INFORMAÇÕES> Query Params/ Route Params / Request Body
 
-database.database
+// queryParams = https://api:3333/users?userId=1&name=Gustavo ( preciso ter uma URL stateful [filtros, paginação, não-obrigatórios nem sensíveis] )
+// routeParams = https://api:3333/users/1 - faz parte da URL/rota ( serve para identificar recursos, sem informações sensíveis )
+// requestBody = https://api:3333/users/ ( envio de informações de um formulário (HTTPs) )
 
 const server = http.createServer(async(req, res)=>{
 
@@ -20,24 +21,12 @@ const server = http.createServer(async(req, res)=>{
 	
 	console.log(req.body) // Imprimindo o body da request
 	
-	if(method === "GET" && url === "/users"){ // GET na rota "users"
-		const users = database.select('users')
+	const route = routes.find(route => {
+		return route.method === method && route.path === url // ENCONTRAR A ROTA CORRETA
+	})
 
-		return res.end(JSON.stringify(users)) // lista os usuários no DB
-	}
-	
-	if(method === "POST" && url === "/users"){ // POST na rota "users"
-		const { name, email } = req.body
-		
-		const user = { 
-			id: randomUUID(), 
-			name, 
-			email,
-		}
-		
-		database.insert("users", user)// registra os usuários no DB
-		
-		return res.writeHead(201).end()
+	if(route){
+		return route.handler(req,res) // EXECUTANDO A FUNÇÃO DA ROTA CORRETA
 	}
 
 	return res.writeHead(404).end()
