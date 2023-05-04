@@ -22,10 +22,17 @@ const server = http.createServer(async(req, res)=>{
 	console.log(req.body) // Imprimindo o body da request
 	
 	const route = routes.find(route => {
-		return route.method === method && route.path === url // ENCONTRAR A ROTA CORRETA
+	
+	
+		return route.method === method && route.path.test(url) // executar regex na URL
+
 	})
 
 	if(route){
+		const routeParams = req.url.match(route.path) // 
+
+		req.params = { ...routeParams.groups } // informar a informação que está recebendo pela URL
+
 		return route.handler(req,res) // EXECUTANDO A FUNÇÃO DA ROTA CORRETA
 	}
 
