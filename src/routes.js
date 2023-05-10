@@ -12,9 +12,12 @@ export const routes = [
 		path: buildRoutePath('/users'), // diretório/URL
 		handler: (req, res) => {
 
-			console.log(req.query)
-			
-			const users = database.select('users') // variável com todos os dados da tabela
+			const {search} = req.query 
+
+			const users = database.select('users', search ? {
+				name: search,
+				email: search
+			} : null) // variável com todos os dados da tabela
 
 			return res.end(JSON.stringify(users)) // lista os usuários no DB
 		}
