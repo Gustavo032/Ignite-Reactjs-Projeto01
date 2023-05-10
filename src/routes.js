@@ -11,6 +11,9 @@ export const routes = [
 		method: 'GET', // Método
 		path: buildRoutePath('/users'), // diretório/URL
 		handler: (req, res) => {
+
+			console.log(req.query)
+			
 			const users = database.select('users') // variável com todos os dados da tabela
 
 			return res.end(JSON.stringify(users)) // lista os usuários no DB

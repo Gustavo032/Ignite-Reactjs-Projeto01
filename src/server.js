@@ -1,6 +1,7 @@
 import http from "node:http"
 import { json } from "./middlewares/json.js"
 import { routes } from "./routes.js"
+import { extractQueryParams } from "./utils/extract-query-params.js"
 
 // stateful = Informação em memória para funcionar(tipo temporária)
 // stateless = Informação em banco de dados para funcionar
@@ -29,9 +30,15 @@ const server = http.createServer(async(req, res)=>{
 	})
 
 	if(route){
-		const routeParams = req.url.match(route.path) // 
+		const routeParams = req.url.match(route.path) //
+		
+		// console.log(extractQueryParams(routeParams.groups.query)) // extract
 
-		req.params = { ...routeParams.groups } // informar a informação que está recebendo pela URL
+		const { query, ...params } = routeParams.groups
+
+		req.params = params // informar a informação que está recebendo pela URL
+
+		req.query = query ? extractQueryParams(query) : {}
 
 		return route.handler(req,res) // EXECUTANDO A FUNÇÃO DA ROTA CORRETA
 	}
